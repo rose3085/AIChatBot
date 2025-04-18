@@ -42,7 +42,7 @@ namespace AIChatBot.Helper
 
             IGroqClient groqClient = new GroqClient(apiKey, apiModel)
                .SetTemperature(0.5)  // randomness of response   0 = more deterministic , 1= random
-               .SetMaxTokens(1024) // limits the output length
+               .SetMaxTokens(256) // limits the output length
                .SetTopP(1) //
                .SetStop("NONE"); // tells the model when to stop 
 

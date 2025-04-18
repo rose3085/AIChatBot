@@ -41,7 +41,7 @@ namespace AIChatBot.Helper
             var apiModel = _configuration["LLM:ApiModelChat"];
 
             IGroqClient groqClient = new GroqClient(apiKey, apiModel)
-               .SetTemperature(0.5)  // randomness of response   0 = more deterministic , 1= random
+               .SetTemperature(0.2)  // randomness of response   0 = more deterministic , 1= random
                .SetMaxTokens(256) // limits the output length
                .SetTopP(1) //
                .SetStop("NONE"); // tells the model when to stop 
@@ -54,13 +54,13 @@ namespace AIChatBot.Helper
              {
                  Role = MessageRoleType.System,
                  Content =
-                     "You are a helpful assistant designed to help customers to solve their problem and answer to any of their queries.."
+                     "You are a helpful assistant designed to help customers to solve their problem and answer to any of their queries related to any technical issues in their daily life like broken pipes or gas stove and others"
              },
              new Message
              {
                  Role = MessageRoleType.Assistant,
                  Content =
-                     "Based on the provided question give meaningful instruction to user to solve their problem"
+                     "Based on the provided question give meaningful instruction to user to solve their problem. The answers should be short but meaningful.If the question is not related to electrical , plumbing or any mechanical issue please don't give any solution , give some answer like sorry i'm not trained for that but only for solving electrial and mechanical problems  and give response in a single sentence but not a whole paragraph in such case"
              },
              new Message { Role = MessageRoleType.User, Content = prompt.ToString() }
          );

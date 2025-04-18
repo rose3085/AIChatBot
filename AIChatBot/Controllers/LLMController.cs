@@ -24,5 +24,15 @@ namespace AIChatBot.Controllers
             }
             else { return BadRequest(); }
         }
+        [HttpPost("/postAudio")]
+        public async Task<IActionResult> PostAudio([FromForm] AudioDto audio)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _llmFormatter.FormatAudio(audio);
+                return Ok(result);
+            }
+            else { return BadRequest(); }
+        }
     }
 }

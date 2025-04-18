@@ -6,5 +6,8 @@ namespace AIChatBot.Interface
     {
         Task<string> FormatMessage(MessageDto request);
 
+        Task<string> FormatAudio(AudioDto request);
+        Task<string> TranscribeAudio(IFormFile audio);
+
     }
 }

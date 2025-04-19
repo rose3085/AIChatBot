@@ -1,4 +1,5 @@
 ﻿using AIChatBot.DTO;
+using AIChatBot.Helper;
 using AIChatBot.Interface;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,9 +10,12 @@ namespace AIChatBot.Controllers
     public class LLMController : ControllerBase
     {
         public readonly ILLMFormatter _llmFormatter;
-        public LLMController(ILLMFormatter llmFormatter)
+        private readonly TextTokenizer _tokenizer;
+
+        public LLMController(ILLMFormatter llmFormatter, TextTokenizer tokenizer)
         {
-            _llmFormatter = llmFormatter;   
+            _llmFormatter = llmFormatter; 
+            _tokenizer = tokenizer;
         }
 
         [HttpPost("/postQuestions")]
@@ -30,6 +34,17 @@ namespace AIChatBot.Controllers
             if (ModelState.IsValid)
             {
                 var result = await _llmFormatter.FormatAudio(audio);
+                return Ok(result);
+            }
+            else { return BadRequest(); }
+        }
+
+        [HttpPost("/tokenizer")]
+        public async Task<IActionResult> TextTokenizer([FromBody] MessageDto question)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _tokenizer.GetMatchedStrings(question);
                 return Ok(result);
             }
             else { return BadRequest(); }

@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 //                    builder.Configuration["AI:OpenAI:ApiKey"]);
 
 builder.Services.AddScoped<ILLMFormatter, LLMFormatter>();
-
+builder.Services.AddScoped<TextTokenizer>();
 // Add services to the container.
 
 builder.Services.AddControllers();

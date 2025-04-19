@@ -10,9 +10,9 @@ namespace AIChatBot.Controllers
     public class LLMController : ControllerBase
     {
         public readonly ILLMFormatter _llmFormatter;
-        private readonly TextTokenizer _tokenizer;
+        private readonly ITextTokenizer _tokenizer;
 
-        public LLMController(ILLMFormatter llmFormatter, TextTokenizer tokenizer)
+        public LLMController(ILLMFormatter llmFormatter, ITextTokenizer tokenizer)
         {
             _llmFormatter = llmFormatter; 
             _tokenizer = tokenizer;

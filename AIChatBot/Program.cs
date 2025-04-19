@@ -2,9 +2,14 @@ using AIChatBot;
 using Microsoft.SemanticKernel;
 using AIChatBot.Helper;
 using AIChatBot.Interface;
+using AIChatBot.Data;
+using Microsoft.EntityFrameworkCore;
+using AIChatBot.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDbContext<DataContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 //builder.Services.AddKernel()
@@ -12,8 +17,9 @@ var builder = WebApplication.CreateBuilder(args);
 //    .AddOpenAIChatCompletion("gpt-3.5-turbo",
 //                    builder.Configuration["AI:OpenAI:ApiKey"]);
 
+builder.Services.AddScoped<IResponseService, ResponseService>();
 builder.Services.AddScoped<ILLMFormatter, LLMFormatter>();
-builder.Services.AddScoped<TextTokenizer>();
+builder.Services.AddScoped<ITextTokenizer,TextTokenizer>();
 // Add services to the container.
 
 builder.Services.AddControllers();

@@ -13,9 +13,12 @@ namespace AIChatBot.Helper
     {
 
         public readonly IConfiguration _configuration;
-        public LLMFormatter(IConfiguration configuration)
+        private readonly ITextTokenizer _textTokenizer;
+
+        public LLMFormatter(IConfiguration configuration, ITextTokenizer textTokenizer)
         {
            _configuration = configuration; 
+            _textTokenizer = textTokenizer;
         }
 
         public async Task<string> FormatAudio(AudioDto request)
@@ -45,10 +48,13 @@ namespace AIChatBot.Helper
                .SetMaxTokens(256) // limits the output length
                .SetTopP(1) //
                .SetStop("NONE"); // tells the model when to stop 
-
+            var dbResponse = await _textTokenizer.GetFinalResponse(request);
+            var matchedKeywords = await _textTokenizer.GetMatchedStrings(request);
             var prompt = new StringBuilder();
             var question = request.Question;
             prompt.AppendLine($"User's Question: {question}");
+            prompt.AppendLine($"Matched Strings: {matchedKeywords}");
+            prompt.AppendLine($"Database Response: {dbResponse}");
             var response = await groqClient.CreateChatCompletionAsync(
              new Message
              {
@@ -60,7 +66,7 @@ namespace AIChatBot.Helper
              {
                  Role = MessageRoleType.Assistant,
                  Content =
-                     "Based on the provided question give meaningful instruction to user to solve their problem. The answers should be short but meaningful.If the question is not related to electrical , plumbing or any mechanical issue please don't give any solution , give some answer like sorry i'm not trained for that but only for solving electrial and mechanical problems  and give response in a single sentence but not a whole paragraph in such case"
+                     "Based on the provided question give meaningful instruction to user to solve their problem.If the question has matched strings and database response give solution based on the database response combined with the user question. If the question doesn't have any matched strings and database response give answer based on your understanding. The answers should be short but meaningful.If the question is not related to electrical , plumbing or any mechanical issue please don't give any solution , give some answer like sorry i'm not trained for that but only for solving electrial and mechanical problems  and give response in a single sentence but not a whole paragraph in such case"
              },
              new Message { Role = MessageRoleType.User, Content = prompt.ToString() }
          );

@@ -1,4 +1,5 @@
 ﻿using AIChatBot.DTO;
+using AIChatBot.Interface;
 using FuzzySharp;
 using Microsoft.ML;
 using System.Security.Cryptography.Xml;
@@ -7,8 +8,14 @@ using static AIChatBot.Helper.KeywordEnums;
 
 namespace AIChatBot.Helper
 {
-    public class TextTokenizer
+    public class TextTokenizer : ITextTokenizer
     {
+        private readonly IResponseService _responseService;
+
+        public TextTokenizer(IResponseService responseService)
+        {
+            _responseService = responseService;
+        }
         public async Task<TextTokens> Tokenizer(MessageDto msg)
         {
             var context = new MLContext();
@@ -56,6 +63,44 @@ namespace AIChatBot.Helper
                 return matched;
             }
             else { return null; }
+        }
+
+
+        public async Task<string> GetConcatResponseForMatchedStrings(List<string> request)
+        {
+            var stringBuilder = new StringBuilder();
+            foreach (var keyword in request)
+            {
+                var response = await _responseService.GetResponseForKeyword(keyword);
+                if (!string.IsNullOrWhiteSpace(response))
+                {
+                    stringBuilder.AppendLine(response);
+                }
+            }
+            string finalResponse = stringBuilder.ToString();
+            return finalResponse;
+        }
+
+        public async Task<string> GetFinalResponse(MessageDto msg)
+        {
+            var matchedStrings = await GetMatchedStrings(msg);
+            if (!matchedStrings.Any())
+            {
+                var message = "You don't have any matched strings";
+                return message;
+            }
+            else {
+                var response = await GetConcatResponseForMatchedStrings(matchedStrings);
+                if (response != null)
+                {
+                    return response;
+
+                }
+                else {
+                    var message = "You don't have any response in the database";
+                    return message;
+                    }
+            }
         }
     }
 }

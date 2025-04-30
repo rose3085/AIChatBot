@@ -20,6 +20,7 @@ builder.Services.AddDbContext<DataContext>(options =>
 builder.Services.AddScoped<IResponseService, ResponseService>();
 builder.Services.AddScoped<ILLMFormatter, LLMFormatter>();
 builder.Services.AddScoped<ITextTokenizer,TextTokenizer>();
+builder.Services.AddScoped<IImageFormatter, ImageFormatter>();
 // Add services to the container.
 
 builder.Services.AddControllers();
